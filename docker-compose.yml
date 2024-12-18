@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  node-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8002:8002' # Node.js 애플리케이션 포트 매핑
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+    command: ['npm', 'start']
+
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    ports:
+      - '5432:5432' # PostgreSQL 포트 매핑
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+      TZ: Asia/Seoul
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - /Users/koobonse/Documents/postgres:/mnt/data
+
+volumes: # Docker에서 관리할 볼륨 정의
+  postgres_data: # PostgreSQL 데이터 디렉토리를 위한 기존 볼륨
